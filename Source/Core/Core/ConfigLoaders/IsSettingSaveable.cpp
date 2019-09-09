@@ -28,6 +28,8 @@ bool IsSettingSaveable(const Config::ConfigLocation& config_location)
   const static std::vector<Config::ConfigLocation> s_setting_saveable{
       // Main.Core
 
+      Config::MAIN_GC_EMPTY_DRIVE_IS_CLOSED.location,
+
       Config::MAIN_DEFAULT_ISO.location,
       Config::MAIN_MEMCARD_A_PATH.location,
       Config::MAIN_MEMCARD_B_PATH.location,

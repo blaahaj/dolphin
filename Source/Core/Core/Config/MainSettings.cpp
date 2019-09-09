@@ -15,6 +15,9 @@ namespace Config
 {
 // Main.Core
 
+const ConfigInfo<bool> MAIN_GC_EMPTY_DRIVE_IS_CLOSED{{System::Main, "Core", "GCEmptyDriveIsClosed"},
+                                                     false};
+
 const ConfigInfo<bool> MAIN_SKIP_IPL{{System::Main, "Core", "SkipIPL"}, true};
 const ConfigInfo<bool> MAIN_LOAD_IPL_DUMP{{System::Main, "Core", "LoadIPLDump"}, true};
 const ConfigInfo<PowerPC::CPUCore> MAIN_CPU_CORE{{System::Main, "Core", "CPUCore"},

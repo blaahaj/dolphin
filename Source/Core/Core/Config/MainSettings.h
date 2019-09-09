@@ -17,6 +17,7 @@ namespace Config
 {
 // Main.Core
 
+extern const ConfigInfo<bool> MAIN_GC_EMPTY_DRIVE_IS_CLOSED;
 extern const ConfigInfo<bool> MAIN_SKIP_IPL;
 extern const ConfigInfo<bool> MAIN_LOAD_IPL_DUMP;
 extern const ConfigInfo<PowerPC::CPUCore> MAIN_CPU_CORE;

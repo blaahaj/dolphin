@@ -131,11 +131,8 @@ float4 FontChar(uint c, uint x, uint y)
 	return float4(val, val, val, val);
 }
 
-void main()
+void find_parameters(float2 char_pos, out uint c, out float4 fg_col, out float4 bg_col)
 {
-	float2 char_pos = floor(GetCoordinates()*GetResolution()/char_dim);
-	float2 pixel_offset = floor(GetCoordinates()*GetResolution()) - char_pos*char_dim;
-
 	// just a big number
 	float mindiff = float(char_width*char_height) * 100.0;
 
@@ -209,6 +206,39 @@ void main()
 		}
 	}
 
-	float4 col = FontChar(minc, uint(pixel_offset.x), uint(pixel_offset.y));
-	SetOutput(mina * col + minb * (float4(1.0,1.0,1.0,1.0) - col));
+	c = minc;
+	fg_col = mina;
+	bg_col = minb;
+}
+
+void main()
+{
+	float2 char_pos = floor(GetCoordinates()*GetResolution()/char_dim);
+	float2 pixel_offset = floor(GetCoordinates()*GetResolution()) - char_pos*char_dim;
+
+	uint c = 0;
+	float4 fg_col = float4(0.0, 0.0, 0.0, 0.0);
+	float4 bg_col = float4(1.0, 1.0, 1.0, 1.0);
+#if !(defined(SUPPORTS_SUBGROUP_REDUCTION) && defined(GL_KHR_shader_subgroup_ballot))
+	find_parameters(char_pos, c, fg_col, bg_col);
+#else
+	while (true)
+	{
+		float2 max_pos = SUBGROUP_MAX(char_pos);
+		if (max_pos == char_pos)
+		{
+			if (IS_FIRST_ACTIVE_INVOCATION)
+			{
+				find_parameters(max_pos, c, fg_col, bg_col);
+			}
+			c = subgroupBroadcastFirst(c);
+			fg_col = subgroupBroadcastFirst(fg_col);
+			bg_col = subgroupBroadcastFirst(bg_col);
+			break;
+		}
+	}
+#endif
+
+	float4 col = FontChar(c, uint(round(pixel_offset.x)), uint(round(pixel_offset.y)));
+	SetOutput(fg_col * col + bg_col * (float4(1.0,1.0,1.0,1.0) - col));
 }
